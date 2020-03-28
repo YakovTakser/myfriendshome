@@ -1,0 +1,14 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<div class="jumbotron p-4 bg-light rounded shadow-sm post">
+    <h1>New Post</h1>
+    <form class="post-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary btn-lg">Comment</button>
+    </form>
+</div>
+<script>var editor = new MediumEditor('.editable');</script>
+{% endblock %}
+
+

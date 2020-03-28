@@ -1,0 +1,105 @@
+{% extends "blog/base.html" %}
+{% block content %}
+{% load static %}
+
+<article class="p-4 bg-light rounded shadow-sm post">
+    <div class="media" style="">
+      <div class="media-left media-top">
+        <a href="{% url 'profile_watch' pk=post.author.pk %}">
+          <img class="rounded-circle img-thumbnail" src="{{ post.author.profile.image.url }}" alt="" width="90">
+        </a>
+      </div>
+      <div class="media-body ml-1">
+          <div class="user-and-date">
+              <a href="{% url 'profile_watch' pk=post.author.pk %}">{{ post.author.username }}</a>
+              <small class="text-muted">{{ post.created_date|date:"F d, Y" }}</small>
+              {% if object.author == user %}
+              <div>
+                <a class="btn btn-primary btn-xs" href="{% url 'post_edit' pk=post.pk%}">
+                   <span class="gyphicon glyphicon-pencil"></span>
+                </a>
+                <a class="btn btn-danger btn-xs" href="{% url 'post_remove' pk=post.pk%}">
+                   <span class="glyphicon glyphicon-trash"></span>
+                </a>
+              </div>
+              {% endif %}
+          </div>
+        <h4 class="media-heading">{{ post.title }}</h4>
+            <p class="font-italic mb-0">{{ post.text|safe|linebreaksbr }}</p>
+           <div class="row small text-muted mt-3 mb-0">
+              <div class="col-lg-6 float-left">{{post.like_count}} Likes</div>
+              <div class="col-lg-6 float-right">{{ post.comments.count }} Comments</div>
+          </div>
+            <hr class="my-2">
+          {% if user.is_authenticated %}
+          <div class="row">
+              {% if request.user.profile not in post.likes.all %}
+              <div class="col-6">
+                 <a type="button" class="btn btn-sm btn-primary" href="{% url 'like_to_post' pk=post.pk %}">Like</a>
+              </div>
+              {% else %}
+              <div class="col-6">
+                <a type="button" class="btn btn-sm btn-primary" href="{% url 'unlike_to_post' pk=post.pk %}">Unlike</a>
+              </div>
+              {% endif %}
+              <div class="col-6">
+              <a type="button" class="btn btn-sm btn-primary" href="{% url 'add_comment_to_post' pk=post.pk %}">Comment</a>
+              </div>
+          </div>
+            {% endif %}
+      </div>
+    </div>
+
+
+    <div class="row mt-3">
+      {% for image in images %}
+      <figure class="col-md-4">
+        <a href="{{ image.image.url }}">
+          <img alt="picture" src="{{ image.image.url }}" height="150" width="150">
+        </a>
+      </figure>
+      {% endfor %}
+    </div>
+    {% if user.is_authenticated %}
+        {% if user == post.author %}
+        <div align="right">
+            <a type="button" class="btn btn-sm btn-primary" href="{% url 'post_edit' pk=post.pk %}">Edit</a>
+            <a type="button" class="btn btn-sm btn-danger" href="{% url 'post_remove' pk=post.pk %}">Delete</a>
+        </div>
+        {% endif %}
+    {% endif %}
+</article>
+
+
+<!--Comments of the post-->
+<p class="font-italic lead text-center">Comments</p>
+{% for comment in post.comments.all %}
+<section class="pb-3">
+    <div class="container">
+        <div class="bg-white shadow rounded">
+            <div class="carousel-inner px-2">
+                <div class="media mt-2">
+                    <a href="{% url 'profile_watch' pk=post.author.pk %}">
+                        <img class="rounded-circle img-thumbnail" src="{{ comment.author.profile.image.url }}" alt="" width="75">
+                    </a>
+                    <div class="media-body">
+                        <blockquote>
+                            <p class="font-italic lead"> <i class="fa fa-quote-left mr-3 text-success"></i>{{ comment.text|safe|linebreaks }}</p>
+                            <footer class="blockquote-footer">
+                                <a href="{% url 'profile_watch' pk=comment.author.pk %}">{{ comment.author.username }}</a>
+                                <cite title="Source Title"> {{ comment.created_date }}</cite>
+                            </footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+{% endblock %}
+
+
+
+
+

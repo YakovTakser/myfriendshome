@@ -1,0 +1,52 @@
+body{
+    background-color: #E9EBEE;
+}
+
+/* Posts Styling */
+
+.post{
+    margin-top: 20px;
+}
+
+.images-of-post{
+    margin-top: 10px;
+}
+.user-and-date{
+    margin-bottom: 10px;
+}
+
+
+
+/* Comments Styling */
+.comments{
+    background: #ffffff;
+    border: 1.5px solid #dddddd;
+    border-radius: 3px;
+}
+
+.comment{
+
+}
+/* Nav Bar top Styling */
+.my-bar-bg{
+    background-color: #808080;
+
+}
+
+.nav-link {
+    color: white !important;
+}
+.navbar-brand {
+    color: white !important;
+}
+
+/* Nav Bar side Styling */
+.nav-link-side {
+    color: black !important;
+}
+
+/* Profile of user Styling */
+
+.user-profile{
+    margin-top: 75px;
+}

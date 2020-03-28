@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="user-profile" align="center">
+  <div class="card" style="width: 25rem;">
+  <img class="card-img-top" src="{{ user.profile.image.url }}" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">{{ user.username }}</h5>
+     <div class="bg-light p-4 d-flex justify-content-end text-center">
+                <ul class="list-inline mb-0">
+                    {% if user_profile.posts.all|length >= 1 %}
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{user_profile.posts.all.count}}</h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>Posts</small>
+                    </li>
+                    {% endif %}
+                    {% if user_profile.profile.friends.all|length >= 1  %}
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{user.profile.friends.all.count}}</h5><small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>Friends</small>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+       {% if sent_friend_requests %}
+        <h3 class="text-center font-italic" style="color:#495057;">Sent friend requests</h3>
+        <nav class="navbar">
+          <div class="">
+          {% if user.is_authenticated %}
+              <ul class="nav d-flex justify-content-between">
+              {% for sent_friend_request in sent_friend_requests %}
+                  <li class="nav-item">
+                      <a href="{% url 'profile_watch' pk=sent_friend_request.to_user.pk %}" role="tab" aria-controls="home">
+                          <div class="text-center">
+                            <h5>{{ sent_friend_request.to_user.username }}</h5>
+                            <img class="rounded-circle img-thumbnail" src="{{ sent_friend_request.to_user.profile.image.url }}" alt="" width="65">
+                          </div>
+                      </a>
+                  </li>
+              {% endfor %}
+              </ul>
+         {% endif %}
+          </div>
+        </nav>
+        {% endif %}
+
+         {% if received_friend_requests %}
+        <h3 class="text-center font-italic" style="color:#495057;">Received friend requests</h3>
+          <div>
+          {% if user.is_authenticated %}
+              {% for received_friend_request in received_friend_requests %}
+                      <a href="{% url 'profile_watch' pk=received_friend_request.from_user.pk %}" role="tab" aria-controls="home">
+                          <div class="text-center">
+                            <h5>{{ received_friend_request.from_user.username }}</h5>
+                            <img class="rounded-circle img-thumbnail" src="{{ received_friend_request.from_user.profile.image.url }}" alt="" width="65">
+                          </div>
+                      </a>
+                      <div class="py-4 px-4">
+                        <a type="submit" class="btn btn-primary btn-sm" href="{% url 'accept_friend_request' pk=received_friend_request.from_user.pk %}">Accept</a>
+                        <a type="submit" class="btn btn-warning btn-sm" href="{% url 'delete_friend_request' pk=received_friend_request.from_user.pk %}">Delete</a>
+                      </div>
+              {% endfor %}
+
+         {% endif %}
+          </div>
+        {% endif %}
+</div>
+
+<div class="jumbotron">
+     <h5 class="text-center" style="color:#495057;">My Profile</h5>
+     <form class="form-control-xs " method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+            {{ u_form|crispy }}
+            {{ p_form|crispy }}
+            </fieldset>
+            <hr class="my-4">
+            <input type="submit" class="btn btn-primary btn-lg" value="Update">
+        </form>
+</div>
+
+  </div>
+</div>
+</div>
+
+
+{% endblock %}

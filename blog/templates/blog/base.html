@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+   <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+     <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static '/css/blog.css' %}">
+
+     <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC&display=swap" rel="stylesheet">
+
+
+    <!-- Medium Style Editor -->
+    <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+
+    <title>My Friends Home</title>
+
+</head>
+
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-light my-bar-bg">
+      <a class="navbar-brand" href="{% url 'post_list' %}">My Friends Home</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'post_list' %}">Home <span class="sr-only">(current)</span></a>
+            <li class="nav-item active">
+            <a class="nav-link" href="{% url 'about' %}">About</a>
+          </li>
+        </ul>
+
+       <ul class="navbar-nav mr-auto">
+           <li class="nav-item">
+               <form class="form-inline my-2 my-lg-0  ml-auto">
+                  <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-light" type="submit">Search</button>
+               </form>
+           </li>
+       </ul>
+
+        <ul class="navbar-nav">
+         {% if user.is_authenticated %}
+         <li class="nav-item">
+             <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+         </li>
+         {% else %}
+         <li class="nav-item">
+             <a class="nav-link" href="{% url 'login' %}">Log In</a>
+         </li>
+         <li class="nav-item">
+             <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+         </li>
+         {% endif %}
+         </ul>
+      </div>
+    </nav>
+
+
+
+
+
+  <!-- CONTENT BLOCK -->
+    <div class="container">
+        <div class="row" >
+            <!-- Left part of the page -->
+            <div class="col-lg-3 col-sm-12 mt-2 ">
+                <!-- Side Navbar   -->
+   <nav class="navbar">
+          <div class="">
+              {% if user.is_authenticated %}
+              <a href="{% url 'profile' %}" role="tab" aria-controls="home">
+                  <div class="text-center">
+                    <h5 style="color: #000000;">{{user.username}}</h5>
+                    <img class="rounded-circle img-thumbnail" src="{{ user.profile.image.url }}" alt="" width="120">
+                  </div>
+              </a>
+        <div>
+          <ul class="navbar-nav text-center ">
+              <a class="list-group-item-action"   href="{% url 'profile' %}" role="tab" aria-controls="home">Profile</a>
+              <a class="list-group-item-action"   href="{% url 'chat' %}" role="tab">Chat</a>
+              <a class="list-group-item-action"   href="{% url 'friends' %}" role="tab">My Friends</a>
+              <a class="list-group-item-action"   href="{% url 'find_friends' %}" role="tab">Find Friends</a>
+              <a class="list-group-item-action"   href="{% url 'post_new' %}" role="tab">New Post</a>
+            </ul>
+            </div>
+          </div>
+       {% endif %}
+        </nav>
+
+    <!-- Users of the app   -->
+   <nav class="navbar">
+          <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+          <div class="list-group" role="tablist">
+              <h5 class="text-center font-italic" style="color:#495057;">{{ friends_label }}</h5>
+              {% for user_website in users %}
+              <a style="color: #000000;" href="{% url 'profile_watch' pk=user_website.user.pk %}" role="tab" aria-controls="home">
+                  <div class="text-center">
+                    <h6>{{user_website.user.username}}</h6>
+                      {% if user_website.image.url != None %}
+                    <img class="rounded-circle img-thumbnail" src="{{ user_website.image.url }}" alt="" width="80">
+                      {% endif %}
+                  </div>
+              </a>
+              {% endfor %}
+          </div>
+         {% else %}
+         {% endif %}
+            </ul>
+        </nav>
+            </div>
+            <!-- Middle part of the page -->
+            <div class="col-md-6 col-sm-12">
+                <div class="blog_posts">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+            <!-- Right part of the page -->
+            <div class="col-lg-3 col-sm-12 mt-3">
+
+            </div>
+        </div>
+    </div>
+
+ <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

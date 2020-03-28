@@ -1,0 +1,49 @@
+{% extends "blog/base.html" %}
+{% block content %}
+{% load static %}
+
+<h3 class="text-center mt-3"><i>Find Firends</i></h3>
+
+{% for friend in profiles %}
+    <div class="user-profile" align="center">
+  <div class="card" style="width: 18rem;">
+  <img class="card-img-top" src="{{ friend.image.url }}" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title text-center">{{ friend.user.username }}</h5>
+     <div class="bg-light p-4 d-flex justify-content-end text-center">
+                <ul class="list-inline mb-0">
+                    {% if friend.posts.all|length >= 1 %}
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{friend.posts.all.count}}</h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>Posts</small>
+                    </li>
+                    {% endif %}
+                    {% if friend.friends.all|length >= 1  %}
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{friend.friends.all.count}}</h5><small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>Friends</small>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+     <div class="row">
+         <div class="col-lg-6 pt-1">
+            {% if button_status == 'not_friend' %}
+                <a type="submit" class="btn btn-primary btn-sm" href="{% url 'send_friend_request' pk=friend.pk %}">Add Friend</a>
+            {% elif button_status == 'friend_request_sent' %}
+                <a type="submit" class="btn btn-warning btn-sm" href="{% url 'cancel_friend_request' pk=friend.pk %}">Cancel Request</a>
+            {% else %}
+                <a type="submit" class="btn btn-warning btn-sm" href="{% url 'delete_friend' pk=friend.pk %}">Delete Friend</a>
+            {% endif %}
+         </div>
+         <div class="col-lg-6 pt-1">
+                <form  method="POST">
+                    {% csrf_token %}
+                    <input type=hidden name=action value="StartChat">
+                    <input type="submit" class="btn btn-primary btn-sm" name="Chat" value="Start Chat  ">
+                </form>
+            </div>
+         </div>
+  </div>
+</div>
+</div>
+{% endfor %}
+{% endblock %}
