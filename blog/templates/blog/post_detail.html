@@ -12,7 +12,8 @@
       <div class="media-body ml-1">
           <div class="user-and-date">
               <a href="{% url 'profile_watch' pk=post.author.pk %}">{{ post.author.username }}</a>
-              <small class="text-muted">{{ post.created_date|date:"F d, Y" }}</small>
+              <small class="text-muted">{{ post.created_date|date:"F d, Y" }}</small><br>
+              <small class="text-muted">{{ post.topic  }}</small>
               {% if object.author == user %}
               <div>
                 <a class="btn btn-primary btn-xs" href="{% url 'post_edit' pk=post.pk%}">

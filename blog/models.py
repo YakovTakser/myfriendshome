@@ -11,6 +11,26 @@ class Post(models.Model):
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     text = models.TextField()
+    topic = models.CharField(
+        max_length=30,
+        choices=(
+            ('General', 'General'),
+            ('Sports & Fitness', 'Sports & Fitness'),
+            ('Health', 'Health'),
+            ('Entertainment', 'Entertainment'),
+            ('Music', 'Music'),
+            ('Education', 'Education'),
+            ('Science & Tech', 'Science & Tech'),
+            ('Humor', 'Humor'),
+            ('Food & Drink', 'Food & Drink'),
+            ('Family & Parenting', 'Family & Parenting'),
+            ('Style', 'Style'),
+            ('Arts', 'Arts'),
+            ('Travel', 'Travel'),
+            ('Animals', 'Animals'),
+        ),
+        default='choice1',
+    )
     created_date = models.DateTimeField(default=timezone.now)
     likes = models.ManyToManyField(Profile, related_name='likes', blank=True)
 

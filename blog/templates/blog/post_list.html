@@ -12,7 +12,9 @@
         <div class="media-body ml-1">
             <div class="user-and-date">
                 <a href="{% url 'profile_watch' pk=post.author.pk %}">{{ post.author.username }}</a>
-                <small class="text-muted">{{ post.created_date|date:"F d, Y" }}</small>
+                <small class="text-muted">{{ post.created_date|date:"F d, Y" }}</small><br>
+                <small class="text-muted">{{ post.topic  }}</small>
+
             </div>
             <h4 class="media-heading"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h4>
             <p class="font-italic mb-0">{{ post.text|safe|linebreaksbr }}</p>
