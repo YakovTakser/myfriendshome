@@ -11,26 +11,15 @@ class Post(models.Model):
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     text = models.TextField()
-    topic = models.CharField(
-        max_length=30,
-        choices=(
-            ('General', 'General'),
-            ('Sports & Fitness', 'Sports & Fitness'),
-            ('Health', 'Health'),
-            ('Entertainment', 'Entertainment'),
-            ('Music', 'Music'),
-            ('Education', 'Education'),
-            ('Science & Tech', 'Science & Tech'),
-            ('Humor', 'Humor'),
-            ('Food & Drink', 'Food & Drink'),
-            ('Family & Parenting', 'Family & Parenting'),
-            ('Style', 'Style'),
-            ('Arts', 'Arts'),
-            ('Travel', 'Travel'),
-            ('Animals', 'Animals'),
-        ),
-        default='choice1',
+    topic_choices=(
+        ('Health', 'Health'),
+        ('Entertainment', 'Entertainment'),
+        ('Arts', 'Arts'),
+        ('Travel', 'Travel'),
     )
+
+    topic = models.CharField(max_length=30, choices=topic_choices, default='General')
+
     created_date = models.DateTimeField(default=timezone.now)
     likes = models.ManyToManyField(Profile, related_name='likes', blank=True)
 
@@ -66,4 +55,9 @@ class Image(models.Model):
         return self.image.path
 
 
+class TopicOfPost(models.Model):
+    topic = models.CharField(max_length=255)
+    count = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.topic

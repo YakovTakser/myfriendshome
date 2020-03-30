@@ -1,7 +1,8 @@
+import json
 import os, shutil
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Comment, Image
+from .models import Post, Comment, Image, TopicOfPost
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -24,10 +25,14 @@ def PostList(request):
         users = Profile.objects.all()
     posts = Post.objects.all().order_by('-created_date')
 
+    topics = topics_info_to_json()
+    print(topics)
+
     context = {
         'users': users,
         'posts': posts,
         'friends_label': 'Make Friends',
+        'topics': topics,
     }
     return render(request, "blog/post_list.html", context)
 
@@ -54,6 +59,9 @@ class CreatePostView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         if form.is_valid():
             form.save()
+            topic_of_post = get_object_or_404(TopicOfPost, topic=form.instance.topic)
+            topic_of_post.count += 1
+            topic_of_post.save()
             if images:
                 for image in images:
                     img = Image.objects.create(post=form.instance, image=image)
@@ -174,3 +182,16 @@ def dir_creation(request, dir_to_create):
     else:
         print("Successfully created the directory %s " % dir_to_create)
     return
+
+
+def topics_info_to_json():
+    topics = TopicOfPost.objects.all()
+    names_of_topics = []
+    counts_of_topics = []
+    for topic in topics:
+        names_of_topics.append(topic.topic)
+        counts_of_topics.append(topic.count)
+    json_names_of_topics = json.dumps(names_of_topics)
+    json_counts_of_topics = json.dumps(counts_of_topics)
+    topics = {'names_of_topics': json_names_of_topics, 'counts_of_topics': json_counts_of_topics}
+    return topics

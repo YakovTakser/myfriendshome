@@ -1,7 +1,8 @@
 {% extends "blog/base.html" %}
 {% block content %}
 {% load static %}
-
+<div class="row">
+<div class="col-lg-8">
 <article class="p-4 bg-light rounded shadow-sm post">
     <div class="media" style="">
       <div class="media-left media-top">
@@ -71,8 +72,7 @@
     {% endif %}
 </article>
 
-
-<!--Comments of the post-->
+    <!--Comments of the post-->
 <p class="font-italic lead text-center">Comments</p>
 {% for comment in post.comments.all %}
 <section class="pb-3">
@@ -97,6 +97,11 @@
         </div>
     </div>
 </section>
+</div>
+</div>
+
+
+
 {% endfor %}
 {% endblock %}
 

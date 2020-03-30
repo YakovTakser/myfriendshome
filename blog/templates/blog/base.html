@@ -19,7 +19,12 @@
     <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
 
+    <!-- Charts    -->
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/js/mdb.min.js"></script>
+
     <title>My Friends Home</title>
+
 
 </head>
 
@@ -33,7 +38,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="{% url 'post_list' %}">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'post_list' %}">Home<span class="sr-only">(current)</span></a>
             <li class="nav-item active">
             <a class="nav-link" href="{% url 'about' %}">About</a>
           </li>
@@ -73,7 +78,7 @@
     <div class="container">
         <div class="row" >
             <!-- Left part of the page -->
-            <div class="col-lg-3 col-sm-12 mt-2 ">
+            <div class="col-lg-3 mt-2 ">
                 <!-- Side Navbar   -->
    <nav class="navbar">
           <div class="">
@@ -120,15 +125,9 @@
         </nav>
             </div>
             <!-- Middle part of the page -->
-            <div class="col-md-6 col-sm-12">
-                <div class="blog_posts">
-                    {% block content %}
-                    {% endblock %}
-                </div>
-            </div>
-            <!-- Right part of the page -->
-            <div class="col-lg-3 col-sm-12 mt-3">
-
+            <div class="col-lg-9">
+                {% block content %}
+                {% endblock %}
             </div>
         </div>
     </div>
