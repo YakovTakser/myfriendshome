@@ -2,7 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-
+<div class="row">
+<div class="col-lg-8">
 <div class="user-profile" align="center">
   <div class="card" style="width: 25rem;">
   <img class="card-img-top" src="{{ user_profile.profile.image.url }}" alt="Card image cap">
@@ -43,6 +44,8 @@
          </div>
       {% endif %}
   </div>
+</div>
+</div>
 </div>
 </div>
 {% endblock %}
