@@ -1,13 +1,26 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-
 {% block content %}
-    <div class="jumbotron p-4 bg-light rounded shadow-sm post">
-        <h1>Sign Up</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <input type="submit" class="btn btn-primary btn-lg" value="Sign Up">
-        </form>
+<div class="row">
+<div class="col-lg-8 mt-2">
+    <div class="card">
+        <h5 class="card-header info-color white-text text-center py-4">
+            <strong>Sign up</strong>
+        </h5>
+        <div class="card-body px-lg-5 pt-0">
+
+            <!-- Form -->
+            <form class="text-center" style="color: #757575;" action="#!" method="POST">
+                 {% csrf_token %}
+                 {{ form|crispy }}
+
+                <!-- Sign up button -->
+                <input class="btn btn-info my-4 btn-block" type="submit" value="Sign Up">
+            </form>
+        </div>
     </div>
+</div>
+</div>
 {% endblock %}
+
+

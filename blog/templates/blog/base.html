@@ -6,9 +6,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-     <!-- Custom CSS -->
+
+    <!-- MDB   -->
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.15.0/css/mdb.min.css" rel="stylesheet">
+
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.15.0/js/mdb.min.js"></script>
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static '/css/blog.css' %}">
 
      <!-- Fonts -->
@@ -19,9 +33,6 @@
     <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
 
-
-    <!-- MDB core JavaScript -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/js/mdb.min.js"></script>
 
     <title>My Friends Home</title>
 
@@ -37,9 +48,9 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'post_list' %}">Home<span class="sr-only">(current)</span></a>
-            <li class="nav-item active">
+            <li class="nav-item">
             <a class="nav-link" href="{% url 'about' %}">About</a>
           </li>
         </ul>
@@ -80,19 +91,21 @@
             <!-- Left part of the page -->
             <div class="col-lg-3 mt-2 ">
                 <!-- Side Navbar   -->
-   <nav class="navbar">
+   <nav>
           <div class="">
               {% if user.is_authenticated %}
               <a href="{% url 'profile' %}" role="tab" aria-controls="home">
                   <div class="text-center">
                     <h5 style="color: #000000;">{{user.username}}</h5>
+                      {% if user.profile.image %}
                     <img class="rounded-circle img-thumbnail" src="{{ user.profile.image.url }}" alt="" width="120">
+                      {% endif %}
                   </div>
               </a>
         <div>
           <ul class="navbar-nav text-center ">
               <a class="list-group-item-action"   href="{% url 'profile' %}" role="tab" aria-controls="home">Profile</a>
-              <a class="list-group-item-action"   href="{% url 'chat' %}" role="tab">Chat</a>
+              <a class="list-group-item-action"   href="{% url 'chat' %}" role="tab">Messages</a>
               <a class="list-group-item-action"   href="{% url 'friends' %}" role="tab">My Friends</a>
               <a class="list-group-item-action"   href="{% url 'find_friends' %}" role="tab">Find Friends</a>
               <a class="list-group-item-action"   href="{% url 'post_new' %}" role="tab">New Post</a>
@@ -101,9 +114,9 @@
           </div>
        {% endif %}
         </nav>
-
+        <br>
     <!-- Users of the app   -->
-   <nav class="navbar">
+   <nav>
           <ul class="navbar-nav">
           {% if user.is_authenticated %}
           <div class="list-group" role="tablist">
@@ -131,6 +144,13 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
 
  <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

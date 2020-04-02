@@ -26,7 +26,7 @@ class SignUp(CreateView):
 
 
 @login_required()
-def pic_save(request):
+def pic_save(request, image):
     # Make a user's directory with all his files
     user_dir = settings.MEDIA_ROOT + "\\" + request.user.username
     # Check if user's directory already exists
@@ -50,26 +50,34 @@ def pic_save(request):
     # Check if user's profile pics directory exists, if yes move there the new profile pic
     # and assign the new path to user's profile pic
     if os.path.isdir(user_dir_profile_pics):
-        new_path_of_profile_pic = user_dir_profile_pics + "\\" + request.user.profile.image.name
-        shutil.move(request.user.profile.image.path, new_path_of_profile_pic)
-        request.user.profile.image = new_path_of_profile_pic
-        request.user.profile.save()
-    return
+        new_path_of_profile_pic = user_dir_profile_pics + "\\" + image.name
+        shutil.move(image.path, new_path_of_profile_pic)
+        image = new_path_of_profile_pic
+    return image
 
 
 @login_required
 def profile(request):
     # If method is POST
     if request.method == 'POST':
+        img_profile_previous = request.user.profile.image
+        img_theme_previous = request.user.profile.theme_image
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
                                    instance=request.user.profile)
         if u_form.is_valid() and p_form.is_valid():
-            # current_profile_img_name = request.user.profile.image.name
             u_form.save()
             p_form.save()
-            pic_save(request)
+            # IF PICTURE WAS CHANGED PUT IT TO THE USER PICS DIRECTORY
+            if img_profile_previous != request.user.profile.image:
+                image = pic_save(request, request.user.profile.image)
+                request.user.profile.image = image
+                request.user.profile.save()
+            if img_theme_previous != request.user.profile.theme_image:
+                image = pic_save(request, request.user.profile.theme_image)
+                request.user.profile.theme_image = image
+                request.user.profile.save()
             return redirect('profile')
     # If method is GET
     else:

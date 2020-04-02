@@ -1,51 +1,61 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-
 {% block content %}
 <div class="row">
-<div class="col-lg-8">
-<div class="user-profile" align="center">
-  <div class="card" style="width: 25rem;">
-  <img class="card-img-top" src="{{ user_profile.profile.image.url }}" alt="Card image cap">
-  <div class="card-body">
-    <h5 class="card-title">{{ user_profile.username }}</h5>
-     <div class="bg-light p-4 d-flex justify-content-end text-center">
-                <ul class="list-inline mb-0">
-                    {% if user_profile.posts.all|length >= 1 %}
-                    <li class="list-inline-item">
-                        <h5 class="font-weight-bold mb-0 d-block">{{user_profile.posts.all.count}}</h5><small class="text-muted"> <i class="fa fa-picture-o mr-1"></i>Posts</small>
-                    </li>
-                    {% endif %}
-                    {% if user_profile.profile.friends.all|length >= 1  %}
-                    <li class="list-inline-item">
-                        <h5 class="font-weight-bold mb-0 d-block">{{user_profile.profile.friends.all.count}}</h5><small class="text-muted"> <i class="fa fa-user-circle-o mr-1"></i>Friends</small>
-                    </li>
-                    {% endif %}
-                </ul>
+    <div class="col-lg-8 mt-3">
+        <div class="card card-personal mb-4">
+            <div class="text-center">
+          {% if user_profile.profile.theme_image  %}
+          <div class="text-center" style="background-image: url('{{ user_profile.profile.theme_image.url }}');  background-size: 100% 100%;">
+          {% else %}
+          <div class="text-center">
+          {% endif %}
+            <img class="rounded-circle img-thumbnail mt-5" src="{{ user_profile.profile.image.url }}" width="150" alt="">
+            <a href="#!">
+              <div class="mask rgba-white-slight"></div>
+            </a>
+          </div>
             </div>
-      {% if user.is_authenticated %}
-     <div class="row">
-         <div class="col-lg-6 pt-1">
-            {% if button_status == 'not_friend' %}
-                <a type="submit" class="btn btn-primary btn-md" href="{% url 'send_friend_request' pk=user_profile.pk %}">Add Friend</a>
-            {% elif button_status == 'friend_request_sent' %}
-                <a type="submit" class="btn btn-warning btn-md" href="{% url 'cancel_friend_request' pk=user_profile.pk %}">Cancel Request</a>
-            {% else %}
-                <a type="submit" class="btn btn-warning btn-md" href="{% url 'delete_friend' pk=user_profile.pk %}">Delete Friend</a>
+          <div class="card-body">
+            <a>
+              <h4 class="card-title">{{ user_profile.username }}</h4>
+            </a>
+            <a class="card-meta">{{user_profile.profile.profession}}</a>
+            <p class="card-text">{{user_profile.profile.about}}</p>
+
+            <hr>
+            {% if user_profile.profile.friends.all|length >= 1  %}
+            <a class="card-meta"><span><i class="fas fa-user"></i>{{user_profile.profile.friends.all.count}} Friends</span></a>
             {% endif %}
-         </div>
-         <div class="col-lg-6 pt-1">
-                <form  method="POST">
-                    {% csrf_token %}
-                    <input type=hidden name=action value="StartChat">
-                    <input type="submit" class="btn btn-primary btn-md" name="Chat" value="Start Chat  ">
-                </form>
-            </div>
-         </div>
+              &nbsp
+            {% if user_profile.posts.all|length >= 1 %}
+            <a class="card-meta"><span><i class="fas fa-user"></i>{{user_profile.posts.all.count}} Posts</span></a>
+            {% endif %}
+            <p class="card-meta float-right">Joined in {{user_profile.date_joined|date:"F d, Y"}}</p>
+        <div class="text-center">
+                {% if user.is_authenticated %}
+                {% if user != user_profile %}
+             <div class="row">
+                {% if button_status == 'not_friend' %}
+                    <a type="submit" class="btn btn-primary btn-md" href="{% url 'send_friend_request' pk=user_profile.pk %}">Add Friend</a>
+                {% elif button_status == 'friend_request_sent' %}
+                    <a type="submit" class="btn btn-warning btn-md" href="{% url 'cancel_friend_request' pk=user_profile.pk %}">Cancel Request</a>
+                {% else %}
+                    <a type="submit" class="btn btn-warning btn-md" href="{% url 'delete_friend' pk=user_profile.pk %}">Delete Friend</a>
+                {% endif %}
+
+                    <form  method="POST" >
+                        {% csrf_token %}
+                        <input type=hidden name=action value="StartChat">
+                        <input type="submit" class="btn btn-primary btn-md" name="Chat" value="Start Chat">
+                    </form>
+             </div>
+        </div>
       {% endif %}
+      {% endif %}
+    </div>
   </div>
-</div>
-</div>
+  </div>
 </div>
 </div>
 {% endblock %}

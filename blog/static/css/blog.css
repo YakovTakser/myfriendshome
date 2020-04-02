@@ -6,6 +6,7 @@ body{
 
 .post{
     margin-top: 20px;
+    background-color: #F8F8F8;
 }
 
 .images-of-post{
@@ -29,7 +30,7 @@ body{
 }
 /* Nav Bar top Styling */
 .my-bar-bg{
-    background-color: #808080;
+    background-color: #33B5E5;
 
 }
 
@@ -50,3 +51,4 @@ body{
 .user-profile{
     margin-top: 75px;
 }
+
