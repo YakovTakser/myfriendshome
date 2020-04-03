@@ -7,7 +7,9 @@
     <div class="media" style="">
       <div class="media-left media-top">
         <a href="{% url 'profile_watch' pk=post.author.pk %}">
+            {% if post.author.profile.image %}
           <img class="rounded-circle img-thumbnail" src="{{ post.author.profile.image.url }}" alt="" width="90">
+            {% endif %}
         </a>
       </div>
       <div class="media-body ml-1">
