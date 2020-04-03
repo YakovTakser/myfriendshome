@@ -84,7 +84,9 @@
             <div class="carousel-inner px-2">
                 <div class="media mt-2">
                     <a href="{% url 'profile_watch' pk=post.author.pk %}">
+                        {% if comment.author.profile.image %}
                         <img class="rounded-circle img-thumbnail" src="{{ comment.author.profile.image.url }}" alt="" width="75">
+                        {% endif %}
                     </a>
                     <div class="media-body">
                         <blockquote>

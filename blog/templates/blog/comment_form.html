@@ -1,12 +1,25 @@
-{% extends "blog/base.html" %}
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-<div class="jumbotron p-4 bg-light rounded shadow-sm post">
-    <h1>New Post</h1>
-    <form class="post-form" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary btn-lg">Comment</button>
-    </form>
+<div class="row">
+<div class="col-lg-8 mt-2">
+    <div class="card">
+        <h5 class="card-header info-color white-text text-center py-4">
+            <strong>New Comment</strong>
+        </h5>
+        <div class="card-body px-lg-5 pt-0">
+
+            <!-- Form -->
+            <form class="post-form" method="POST" enctype="multipart/form-data">
+                 {% csrf_token %}
+                 {{ form|crispy }}
+
+                <!-- Sign up button -->
+                <input class="btn btn-info my-4 btn-block" type="submit" value="Post">
+            </form>
+        </div>
+    </div>
+</div>
 </div>
 <script>var editor = new MediumEditor('.editable');</script>
 {% endblock %}
