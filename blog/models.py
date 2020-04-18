@@ -49,7 +49,7 @@ class Comment(models.Model):
 
 class Image(models.Model):
     post = models.ForeignKey(Post, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='')
+    image = models.ImageField(max_length=300, upload_to='')
 
     def __str__(self):
         return self.image.path

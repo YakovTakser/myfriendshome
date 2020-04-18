@@ -10,7 +10,9 @@
           {% else %}
           <div class="text-center">
           {% endif %}
+              {% if user_profile.profile.image %}
             <img class="rounded-circle img-thumbnail mt-5" src="{{ user_profile.profile.image.url }}" width="150" alt="">
+              {% endif %}
             <a href="#!">
               <div class="mask rgba-white-slight"></div>
             </a>

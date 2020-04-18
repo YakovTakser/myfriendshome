@@ -1,5 +1,8 @@
 import json
-import os, shutil
+import os
+import shutil
+import sys
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment, Image, TopicOfPost
@@ -11,8 +14,9 @@ from django.views.generic import (TemplateView, ListView,
 from accounts.models import Profile
 from django.conf import settings
 
-
 # Views of posts
+
+
 
 class AboutView(TemplateView):
     template_name = 'about.html'
@@ -153,6 +157,22 @@ def unlike_to_post(request, pk):
     return redirect('post_detail', pk)
 
 
+"""Utilities Functions"""
+
+
+def topics_info_to_json():
+    topics = TopicOfPost.objects.all()
+    names_of_topics = []
+    counts_of_topics = []
+    for topic in topics:
+        names_of_topics.append(topic.topic)
+        counts_of_topics.append(topic.count)
+    json_names_of_topics = json.dumps(names_of_topics)
+    json_counts_of_topics = json.dumps(counts_of_topics)
+    topics = {'names_of_topics': json_names_of_topics, 'counts_of_topics': json_counts_of_topics}
+    return topics
+
+
 @login_required()
 def pic_save(request, img, title):
     user_dir = settings.MEDIA_ROOT + "\\" + request.user.username
@@ -181,16 +201,3 @@ def dir_creation(request, dir_to_create):
     else:
         print("Successfully created the directory %s " % dir_to_create)
     return
-
-
-def topics_info_to_json():
-    topics = TopicOfPost.objects.all()
-    names_of_topics = []
-    counts_of_topics = []
-    for topic in topics:
-        names_of_topics.append(topic.topic)
-        counts_of_topics.append(topic.count)
-    json_names_of_topics = json.dumps(names_of_topics)
-    json_counts_of_topics = json.dumps(counts_of_topics)
-    topics = {'names_of_topics': json_names_of_topics, 'counts_of_topics': json_counts_of_topics}
-    return topics

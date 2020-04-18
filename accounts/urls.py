@@ -15,8 +15,6 @@ urlpatterns = [
     path('acceptfriendrequest/<int:pk>/', views.accept_friend_request, name='accept_friend_request'),
     path('deletefriendrequest/<int:pk>/', views.delete_friend_request, name='delete_friend_request'),
     path('deletefriend/<int:pk>/', views.delete_friend, name='delete_friend'),
-    path('chat/', views.chat, name='chat'),
-    path('conversation/<int:pk>/', views.conversation, name='conversation'),
     path('friends/', views.friends, name='friends'),
     path('findfriends/', views.find_friends, name='find_friends'),
 ]

@@ -2,18 +2,21 @@ import shutil
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404
-
 from .forms import UserCreateForm, UserUpdateForm, ProfileUpdateForm
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import CreateView
 import os
 from django.conf import settings
 from blog.models import Post, Image
-from .models import FriendRequest, Conversation, Message, Profile
+from mailsystem.models import Conversation
+from .models import FriendRequest
 
 
 # Get and return an object or None
+
+
+
 def get_or_none(classmodel, **kwargs):
     try:
         return classmodel.objects.get(**kwargs)
@@ -27,35 +30,6 @@ class SignUp(CreateView):
     template_name = "accounts/signup.html"
 
 
-@login_required()
-def pic_save(request, image):
-    # Make a user's directory with all his files
-    user_dir = settings.MEDIA_ROOT + "\\" + request.user.username
-    # Check if user's directory already exists
-    try:
-        os.mkdir(user_dir)
-    except OSError:
-        print("Creation of the directory %s failed" % user_dir)
-    else:
-        print("Successfully created the directory %s " % user_dir)
-
-    # Make a user's profiles pics directory
-    user_dir_profile_pics = settings.MEDIA_ROOT + "\\" + request.user.username + "\\" + 'profile_pics'
-    # Check if user's profiles pics directory already exists
-
-    try:
-        os.mkdir(user_dir_profile_pics)
-    except OSError:
-        print("Creation of the directory %s failed" % user_dir_profile_pics)
-    else:
-        print("Successfully created the directory %s " % user_dir_profile_pics)
-    # Check if user's profile pics directory exists, if yes move there the new profile pic
-    # and assign the new path to user's profile pic
-    if os.path.isdir(user_dir_profile_pics):
-        new_path_of_profile_pic = user_dir_profile_pics + "\\" + image.name
-        shutil.move(image.path, new_path_of_profile_pic)
-        image = new_path_of_profile_pic
-    return image
 
 
 @login_required
@@ -199,56 +173,7 @@ def delete_friend(request, pk):
     return redirect('profile_watch', pk)
 
 
-#####################################################
-# Chat
-#####################################################
 
-# Shows all chats of the user
-@login_required()
-def chat(request):
-    # Start empty query set
-    conversations = Conversation.objects.none()
-    # Take all conversation of current user
-    conversations1 = Conversation.objects.filter(user1=request.user)
-    conversations2 = Conversation.objects.filter(user2=request.user)
-    # Merge between the query sets
-    conversations = conversations1 | conversations2
-    context = {'conversations': conversations}
-    return render(request, 'accounts/chat.html', context)
-
-
-# Shows all messages of a specific chat of the user
-@login_required()
-def conversation(request, pk):
-    current_conversation = get_object_or_404(Conversation, pk=pk)
-    # check if user is the owner of the conversion
-    if request.user != current_conversation.user1 and request.user != current_conversation.user2:
-        raise Http404("Page does not exist")
-
-    if request.method == 'POST':
-        msg = request.POST.get('msg')
-        if current_conversation.user1 == request.user:
-            message = Message.objects.create(sender=request.user, receiver=current_conversation.user2, text=msg)
-        else:
-            message = Message.objects.create(sender=request.user, receiver=current_conversation.user1, text=msg)
-        message.save()
-        current_conversation.messages.add(message)
-
-    messages = current_conversation.messages.all()
-    # Start empty query set
-    conversations = Conversation.objects.none()
-    # Take all conversation of current user
-    conversations1 = Conversation.objects.filter(user1=request.user)
-    conversations2 = Conversation.objects.filter(user2=request.user)
-    # Merge between the query sets
-    conversations = conversations1 | conversations2
-
-    context = {
-        'current_conversation': current_conversation,
-        'conversations': conversations,
-        'messages': messages,
-    }
-    return render(request, 'accounts/conversation.html', context)
 
 
 @login_required()
@@ -263,3 +188,29 @@ def find_friends(request):
         'profiles': profiles,
     }
     return render(request, "accounts/findfriends.html", context)
+
+
+"""Utilities Functions"""
+@login_required()
+def pic_save(request, img):
+    user_dir = settings.MEDIA_ROOT + "\\" + request.user.username
+    dir_creation(request, user_dir)
+    user_dir_profile_pics = user_dir + "\\" + 'profile'
+    dir_creation(request, user_dir_profile_pics)
+
+    if os.path.isdir(user_dir_profile_pics):
+        new_path_of_profile_pics = user_dir_profile_pics + "\\" + img.name
+        shutil.move(img.path, new_path_of_profile_pics)
+        img = new_path_of_profile_pics
+    return img
+
+
+@login_required()
+def dir_creation(request, dir_to_create):
+    try:
+        os.mkdir(dir_to_create)
+    except OSError:
+        print("Creation of the directory %s failed" % dir_to_create)
+    else:
+        print("Successfully created the directory %s " % dir_to_create)
+    return

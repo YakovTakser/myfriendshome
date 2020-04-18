@@ -56,12 +56,6 @@
         </ul>
 
        <ul class="navbar-nav mr-auto">
-<!--           <li class="nav-item">-->
-<!--               <form class="form-inline my-2 my-lg-0  ml-auto">-->
-<!--                  <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
-<!--                  <button class="btn btn-light" type="submit">Search</button>-->
-<!--               </form>-->
-<!--           </li>-->
        </ul>
 
         <ul class="navbar-nav">
@@ -97,7 +91,7 @@
               <a href="{% url 'profile' %}" role="tab" aria-controls="home">
                   <div class="text-center">
                     <h5 style="color: #000000;">{{user.username}}</h5>
-                      {% if user.profile.image %}
+                      {% if user.profile.image  %}
                     <img class="rounded-circle img-thumbnail" src="{{ user.profile.image.url }}" alt="" width="120">
                       {% endif %}
                   </div>
@@ -125,7 +119,7 @@
               <a style="color: #000000;" href="{% url 'profile_watch' pk=user_website.user.pk %}" role="tab" aria-controls="home">
                   <div class="text-center">
                     <h6>{{user_website.user.username}}</h6>
-                      {% if user_website.image.url != None %}
+                      {% if user_website.image %}
                     <img class="rounded-circle img-thumbnail" src="{{ user_website.image.url }}" alt="" width="80">
                       {% endif %}
                   </div>

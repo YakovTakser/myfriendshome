@@ -252,7 +252,9 @@
                           <li>
 							<div class="d-flex bd-highlight">
 								<div class="img_cont">
+									{% if conversation.user2.profile.image %}
 									<img src="{{ conversation.user2.profile.image.url }}" class="rounded-circle user_img">
+									{% endif %}
 								</div>
 								<div class="user_info">
 									<span>{{ conversation.user2.username }}</span>

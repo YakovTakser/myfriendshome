@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'crispy_forms',
+    'mailsystem.apps.MailsystemConfig',
     'accounts.apps.AccountsConfig',
     'blog.apps.BlogConfig',
     'django.contrib.admin',

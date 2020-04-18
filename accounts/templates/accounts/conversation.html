@@ -252,7 +252,9 @@
                           <li>
 							<div class="d-flex bd-highlight">
 								<div class="img_cont">
+									{% if conversation.user2.profile.image %}
 									<img src="{{ conversation.user2.profile.image.url }}" class="rounded-circle user_img">
+									{% endif %}
 								</div>
 								<div class="user_info">
 									<span>{{ conversation.user2.username }}</span>
@@ -273,8 +275,9 @@
 							<div class="d-flex bd-highlight">
 
 								<div class="img_cont">
+									{% if conversation.user2.profile.image %}
 									<img src="{{current_conversation.user1.profile.image.url}}" class="rounded-circle user_img">
-
+									{% endif %}
 								</div>
 
 								<div class="user_info">
@@ -299,8 +302,9 @@
 							<div class="d-flex bd-highlight">
 
 								<div class="img_cont">
+									{% if conversation.user2.profile.image %}
 									<img src="{{current_conversation.user2.profile.image.url}}" class="rounded-circle user_img">
-
+									{% endif %}
 								</div>
 
 								<div class="user_info">
@@ -344,7 +348,9 @@
 
 								</div>
 								<div class="img_cont_msg">
-							<img src="{{message.sender.profile.image.url}}" class="rounded-circle user_img_msg">
+								{% if conversation.user2.profile.image %}
+									<img src="{{message.sender.profile.image.url}}" class="rounded-circle user_img_msg">
+								{% endif %}
 								</div>
 							</div>
                             {% endif %}
