@@ -8,8 +8,8 @@ from PIL import Image
 # Profile of user model
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='', null=True, blank=True)
-    theme_image = models.ImageField(upload_to='', null=True, blank=True)
+    image = models.ImageField(max_length=300, upload_to='', null=True, blank=True)
+    theme_image = models.ImageField(max_length=300, upload_to='', null=True, blank=True)
     profession = models.CharField(max_length=255, blank=True)
     about = models.CharField(max_length=1000, blank=True)
     friends = models.ManyToManyField('Profile', blank=True)

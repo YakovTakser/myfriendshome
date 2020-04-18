@@ -26,7 +26,6 @@ def PostList(request):
     posts = Post.objects.all().order_by('-created_date')
 
     topics = topics_info_to_json()
-    print(topics)
 
     context = {
         'users': users,

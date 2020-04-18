@@ -12,12 +12,14 @@ from django.conf import settings
 from blog.models import Post, Image
 from .models import FriendRequest, Conversation, Message, Profile
 
+
 # Get and return an object or None
 def get_or_none(classmodel, **kwargs):
     try:
         return classmodel.objects.get(**kwargs)
     except classmodel.DoesNotExist:
         return None
+
 
 class SignUp(CreateView):
     form_class = UserCreateForm
@@ -89,7 +91,6 @@ def profile(request):
         posts_number = Post.objects.filter(author=request.user).count()
         friends_number = request.user.profile.friends.all().count()
 
-
     context = {
         'u_form': u_form,
         'p_form': p_form,
@@ -125,8 +126,6 @@ def profile_watch(request, pk):
                         pk_conversation = con.pk
                 return redirect('conversation', pk=pk_conversation)
 
-
-
     profile = user_watch.profile
     button_status = 'none'
     if request.user.is_authenticated:
@@ -142,7 +141,6 @@ def profile_watch(request, pk):
                }
     print('friend status ' + str(button_status))
     return render(request, 'accounts/profile_watch.html', context)
-
 
 
 ###################################################
@@ -171,6 +169,7 @@ def cancel_friend_request(request, pk):
         context = {'user_profile': user}
         return redirect('profile_watch', pk)
 
+
 @login_required()
 def accept_friend_request(request, pk):
     from_user = get_object_or_404(User, pk=pk)
@@ -180,7 +179,7 @@ def accept_friend_request(request, pk):
     user1.profile.friends.add(user2.profile)
     user2.profile.friends.add(user1.profile)
     frequest.delete()
-    context = {'user_profile':from_user}
+    context = {'user_profile': from_user}
     return redirect('profile')
 
 
@@ -192,13 +191,13 @@ def delete_friend_request(request, pk):
     return redirect('profile')
 
 
-
 @login_required()
 def delete_friend(request, pk):
     friend_delete = get_object_or_404(User, pk=pk)
     friend_delete.profile.friends.remove(request.user.profile)
     request.user.profile.friends.remove(friend_delete.profile)
     return redirect('profile_watch', pk)
+
 
 #####################################################
 # Chat
@@ -217,6 +216,7 @@ def chat(request):
     context = {'conversations': conversations}
     return render(request, 'accounts/chat.html', context)
 
+
 # Shows all messages of a specific chat of the user
 @login_required()
 def conversation(request, pk):
@@ -224,7 +224,6 @@ def conversation(request, pk):
     # check if user is the owner of the conversion
     if request.user != current_conversation.user1 and request.user != current_conversation.user2:
         raise Http404("Page does not exist")
-
 
     if request.method == 'POST':
         msg = request.POST.get('msg')
@@ -235,7 +234,6 @@ def conversation(request, pk):
         message.save()
         current_conversation.messages.add(message)
 
-    print('here yes2')
     messages = current_conversation.messages.all()
     # Start empty query set
     conversations = Conversation.objects.none()
@@ -265,5 +263,3 @@ def find_friends(request):
         'profiles': profiles,
     }
     return render(request, "accounts/findfriends.html", context)
-
-
