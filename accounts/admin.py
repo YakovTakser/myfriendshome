@@ -5,5 +5,4 @@ from .models import Profile, FriendRequest
 
 admin.site.register(Profile)
 admin.site.register(FriendRequest)
-# admin.site.register(Conversation)
-# admin.site.register(Message)
+

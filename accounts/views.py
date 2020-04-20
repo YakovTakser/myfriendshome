@@ -1,7 +1,6 @@
 import shutil
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import Http404
 from .forms import UserCreateForm, UserUpdateForm, ProfileUpdateForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -10,14 +9,11 @@ import os
 from django.conf import settings
 from blog.models import Post, Image
 from mailsystem.models import Conversation
-from .models import FriendRequest
-
-
-# Get and return an object or None
-
+from .models import FriendRequest, Profile
 
 
 def get_or_none(classmodel, **kwargs):
+    """Custom get object or return a none"""
     try:
         return classmodel.objects.get(**kwargs)
     except classmodel.DoesNotExist:
@@ -25,17 +21,17 @@ def get_or_none(classmodel, **kwargs):
 
 
 class SignUp(CreateView):
+    """View creates a new user"""
     form_class = UserCreateForm
     success_url = reverse_lazy("login")
     template_name = "accounts/signup.html"
 
 
-
-
 @login_required
 def profile(request):
-    # If method is POST
+    """View of logged in user, shows or updates user info and his profile info"""
     if request.method == 'POST':
+        """If method is POST, saves new info of user and his profile"""
         img_profile_previous = request.user.profile.image
         img_theme_previous = request.user.profile.theme_image
         u_form = UserUpdateForm(request.POST, instance=request.user)
@@ -45,7 +41,7 @@ def profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            # IF PICTURE WAS CHANGED PUT IT TO THE USER PICS DIRECTORY
+            """If picture was changed then put it to the user's pics directory"""
             if img_profile_previous != request.user.profile.image:
                 image = pic_save(request, request.user.profile.image)
                 request.user.profile.image = image
@@ -55,58 +51,48 @@ def profile(request):
                 request.user.profile.theme_image = image
                 request.user.profile.save()
             return redirect('profile')
-    # If method is GET
+
     else:
+        """If method is GET, shows info of user and his profile"""
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
         friends = request.user.profile.friends.all()
         sent_friend_requests = FriendRequest.objects.filter(from_user=request.user)
         received_friend_requests = FriendRequest.objects.filter(to_user=request.user)
-        posts_number = Post.objects.filter(author=request.user).count()
-        friends_number = request.user.profile.friends.all().count()
 
     context = {
         'u_form': u_form,
         'p_form': p_form,
         'users': friends,
-        'friends_label': 'My Friends',
         'sent_friend_requests': sent_friend_requests,
         'received_friend_requests': received_friend_requests,
-        'posts_number': posts_number,
-        'friends_number': friends_number,
     }
     return render(request, 'accounts/profile.html', context)
 
 
 def profile_watch(request, pk):
+    """View of another user"""
     user_watch = get_object_or_404(User, pk=pk)
+    if request.method == 'POST' and request.user.is_authenticated and request.POST.get('action') == 'StartChat':
+        """Creates or shows conversation"""
+        con = get_or_none(Conversation, user1=request.user, user2=user_watch)
+        if con:
+            pk_conversation = con.pk
+        else:
+            con = get_or_none(Conversation, user1=user_watch, user2=request.user)
+            if con:
+                pk_conversation = con.pk
+            else:
+                con = Conversation.objects.create(user1=request.user, user2=user_watch)
+                pk_conversation = con.pk
+        return redirect('conversation', pk=pk_conversation)
 
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            action = request.POST.get('action')
-            if action == 'StartChat':
-                # Check if the conversation between 2 users exists if yes then show it
-                # if not then create it and after that show it
-                con = get_or_none(Conversation, user1=request.user, user2=user_watch)
-                if con:
-                    pk_conversation = con.pk
-                else:
-                    con = get_or_none(Conversation, user1=user_watch, user2=request.user)
-                    if con:
-                        pk_conversation = con.pk
-                    else:
-                        pass
-                        con = Conversation.objects.create(user1=request.user, user2=user_watch)
-                        pk_conversation = con.pk
-                return redirect('conversation', pk=pk_conversation)
-
+    """If method is GET """
     profile = user_watch.profile
     button_status = 'none'
     if request.user.is_authenticated:
         if profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
-
-            # if we have sent him a friend request
             if len(FriendRequest.objects.filter(
                     from_user=request.user).filter(to_user=profile.user)) == 1:
                 button_status = 'friend_request_sent'
@@ -123,16 +109,17 @@ def profile_watch(request, pk):
 
 
 def send_friend_request(request, pk):
+    """Send a friend request to a user"""
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=pk)
-        frequest, created = FriendRequest.objects.get_or_create(
+        FriendRequest.objects.get_or_create(
             from_user=request.user,
             to_user=user)
-        context = {'user_profile': user}
         return redirect('profile_watch', pk)
 
 
 def cancel_friend_request(request, pk):
+    """Cancel a friend request that sent to a user"""
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=pk)
         frequest = FriendRequest.objects.filter(
@@ -140,12 +127,12 @@ def cancel_friend_request(request, pk):
             to_user=user).first()
         frequest.__str__()
         frequest.delete()
-        context = {'user_profile': user}
         return redirect('profile_watch', pk)
 
 
 @login_required()
 def accept_friend_request(request, pk):
+    """Accept a friend request from user"""
     from_user = get_object_or_404(User, pk=pk)
     frequest = FriendRequest.objects.filter(from_user=from_user, to_user=request.user).first()
     user1 = frequest.to_user
@@ -153,46 +140,58 @@ def accept_friend_request(request, pk):
     user1.profile.friends.add(user2.profile)
     user2.profile.friends.add(user1.profile)
     frequest.delete()
-    context = {'user_profile': from_user}
     return redirect('profile')
 
 
 def delete_friend_request(request, pk):
+    """Delete a friend request from user"""
     from_user = get_object_or_404(User, pk=pk)
     frequest = FriendRequest.objects.filter(from_user=from_user, to_user=request.user).first()
     frequest.delete()
-    context = {'user_profile': from_user}
     return redirect('profile')
 
 
 @login_required()
 def delete_friend(request, pk):
+    """Remove friend from friends list"""
     friend_delete = get_object_or_404(User, pk=pk)
     friend_delete.profile.friends.remove(request.user.profile)
     request.user.profile.friends.remove(friend_delete.profile)
     return redirect('profile_watch', pk)
 
 
-
-
-
 @login_required()
 def friends(request):
-    return render(request, "accounts/friends.html")
+    """Shows all friends of a user"""
+    profiles = request.user.profile.friends.all()
+    context = {
+        'profiles': profiles,
+    }
+    return render(request, "accounts/friends.html", context)
 
 
 @login_required()
 def find_friends(request):
-    profiles = request.user.profile.friends.all()
+    """Shows users of the web app"""
+    profiles = []
+    users = Profile.objects.all()
+    for user in users:
+        if user not in request.user.profile.friends:
+            profiles.append(user)
     context = {
         'profiles': profiles,
     }
     return render(request, "accounts/findfriends.html", context)
 
 
-"""Utilities Functions"""
+###################################################
+# Utilities Functions
+###################################################
+
+
 @login_required()
 def pic_save(request, img):
+    """Saves a user's pic of profile or theme"""
     user_dir = settings.MEDIA_ROOT + "\\" + request.user.username
     dir_creation(request, user_dir)
     user_dir_profile_pics = user_dir + "\\" + 'profile'
@@ -206,7 +205,8 @@ def pic_save(request, img):
 
 
 @login_required()
-def dir_creation(request, dir_to_create):
+def dir_creation(dir_to_create):
+    """Creates new direcotry"""
     try:
         os.mkdir(dir_to_create)
     except OSError:

@@ -5,8 +5,8 @@ from PIL import Image
 
 
 # Create your models here.
-# Profile of user model
 class Profile(models.Model):
+    """Profile of a user object"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(max_length=300, upload_to='', null=True, blank=True)
     theme_image = models.ImageField(max_length=300, upload_to='', null=True, blank=True)
@@ -15,26 +15,29 @@ class Profile(models.Model):
     friends = models.ManyToManyField('Profile', blank=True)
 
     def save(self, *args, **kwargs):
+        """Save a profile and checks if image sizes more than 300px"""
         super().save(*args, **kwargs)
         if self.image:
             img = Image.open(self.image.path)
-            # If image's height or width more than 300 then resize the image
             if img.height > 300 or img.width > 300:
                 output_size = (300, 300)
                 img.thumbnail(output_size)
                 img.save(self.image.path)
 
     def __str__(self):
-        return str(self.user.username)
+        """Represent a user object"""
+        return self.user.username
 
 
 class FriendRequest(models.Model):
+    """Friend request object"""
     to_user = models.ForeignKey(User, related_name='to_user', on_delete=models.CASCADE)
     from_user = models.ForeignKey(User, related_name='from_user', on_delete=models.CASCADE)
     time_sent = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "From {}, to {}".format(self.from_user.username, self.to_user.username)
+        """Represent a friend request object"""
+        return f"From {self.from_user.username}, to {self.to_user.username}"
 
 
 

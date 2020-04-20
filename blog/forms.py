@@ -3,6 +3,7 @@ from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
+    """Form of creation a new post"""
     image_field = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 
     class Meta():
@@ -15,6 +16,7 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    """Form of creation a new comment to a post"""
     class Meta():
         model = Comment
         fields = ('text',)

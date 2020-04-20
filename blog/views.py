@@ -1,28 +1,25 @@
 import json
 import os
 import shutil
-import sys
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment, Image, TopicOfPost
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import (TemplateView, ListView,
+from django.views.generic import (TemplateView,
                                   DetailView, CreateView, UpdateView, DeleteView)
 from accounts.models import Profile
 from django.conf import settings
 
-# Views of posts
-
-
 
 class AboutView(TemplateView):
+    """View shows about page"""
     template_name = 'about.html'
 
 
 def PostList(request):
+    """View shows all posts"""
     if request.user.is_authenticated:
         users = Profile.objects.exclude(user=request.user)
     else:
@@ -41,6 +38,7 @@ def PostList(request):
 
 
 class PostDetailView(DetailView):
+    """View shows post details"""
     model = Post
 
     def get(self, request, *args, **kwargs):
@@ -51,12 +49,14 @@ class PostDetailView(DetailView):
 
 
 class CreatePostView(LoginRequiredMixin, CreateView):
+    """View creates new post"""
     template_name = 'blog/post_form.html'
     login_url = '/login/'
     redirect_field_name = 'blog/post_detail.html'
     form_class = PostForm
 
     def post(self, request, *args, **kwargs):
+        """If method is POST"""
         form = PostForm(request.POST)
         images = request.FILES.getlist('image_field')
         form.instance.author = self.request.user
@@ -74,12 +74,14 @@ class CreatePostView(LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """View updates post details"""
     login_url = '/login/'
     redirect_field_name = 'blog/post_detail.html'
     model = Post
     form_class = PostForm
 
     def post(self, request, *args, **kwargs):
+        """If method is POST"""
         form = PostForm(request.POST)
         images = request.FILES.getlist('image_field')
         post = self.get_object()
@@ -95,6 +97,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return render(request, 'blog/post_form.html', {'form': PostForm})
 
     def test_func(self):
+        """Test func, checks conditions"""
         post = self.get_object()
         if self.request.user == post.author:
             return True
@@ -102,10 +105,12 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """View deletes a post"""
     model = Post
     success_url = reverse_lazy('post_list')
 
     def test_func(self):
+        """Test func, checks conditions"""
         post = self.get_object()
         if self.request.user == post.author:
             return True
@@ -118,6 +123,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 def add_comment_to_post(request, pk):
+    """Add new comment to post"""
     post = get_object_or_404(Post, pk=pk)
     form = CommentForm()
     if request.method == 'POST':
@@ -133,6 +139,7 @@ def add_comment_to_post(request, pk):
 
 @login_required
 def comment_remove(request, pk):
+    """Remove comment from post"""
     comment = get_object_or_404(Comment, pk=pk)
     post_pk = comment.post.pk
     post = get_object_or_404(Post, pk=post_pk)
@@ -143,6 +150,7 @@ def comment_remove(request, pk):
 
 @login_required()
 def like_to_post(request, pk):
+    """Add like to post"""
     post = get_object_or_404(Post, pk=pk)
     if request.user.profile not in post.likes.all():
         post.likes.add(request.user.profile)
@@ -151,16 +159,19 @@ def like_to_post(request, pk):
 
 @login_required()
 def unlike_to_post(request, pk):
+    """Remove like from post"""
     post = get_object_or_404(Post, pk=pk)
     if request.user.profile in post.likes.all():
         post.likes.remove(request.user.profile)
     return redirect('post_detail', pk)
 
-
-"""Utilities Functions"""
+##################################################
+# Utilities Functions
+##################################################
 
 
 def topics_info_to_json():
+    """Convert python objects to jason format"""
     topics = TopicOfPost.objects.all()
     names_of_topics = []
     counts_of_topics = []
@@ -175,6 +186,7 @@ def topics_info_to_json():
 
 @login_required()
 def pic_save(request, img, title):
+    """Saves pic of a post"""
     user_dir = settings.MEDIA_ROOT + "\\" + request.user.username
     dir_creation(request, user_dir)
     user_dir_posts_pics = user_dir + "\\" + 'posts'
@@ -182,8 +194,6 @@ def pic_save(request, img, title):
     post_folders_name = str(title)
     user_dir_posts_pics = user_dir_posts_pics + "\\" + post_folders_name
     dir_creation(request, user_dir_posts_pics)
-    # if user's post pics directory exists, than move there the new post's pics
-    # and assign the new path to user's post's pics
     if os.path.isdir(user_dir_posts_pics):
         new_path_of_posts_pics = user_dir_posts_pics + "\\" + img.image.name
         shutil.move(img.image.path, new_path_of_posts_pics)
@@ -193,7 +203,8 @@ def pic_save(request, img, title):
 
 
 @login_required()
-def dir_creation(request, dir_to_create):
+def dir_creation(dir_to_create):
+    """Creates a new directory"""
     try:
         os.mkdir(dir_to_create)
     except OSError:
